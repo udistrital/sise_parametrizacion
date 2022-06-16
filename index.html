@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <label for="variableName">Ingrese nombre de variable SISE:</label>
+  <input type="text" id="variableName" placeholder="Ingrese nombre de variable">
+  <input type="text" id="access_token" placeholder="Ingrese token">
+  <button type="button" id="btnSend">Generar variable ingresada</button>
+  <button type="button" id="btnSendAllVariables">Generar todas las variables definidas internamente</button>
+  <a download="info_complementarias_variables.txt" id="downloadlink" style="display: none">Descargar info_complementaria</a>
+
+  <div id="ICsTxts"></div>
+
+  <script>
+    // "Localidades", // DE ESTE SOLO SE NECESITA EL G.I.C
+    let variables = [
+      // INFO PERSONAL
+      "Genero",
+      "Nacionalidad",
+      "Lugar de nacimiento",
+      "Estrato",
+      "Estado Civil",
+      "Tipo de poblacion",
+      "Condiciones discapacidad",
+      "Correo personal",
+      "Red social 1",
+      "Red social 2",
+      "Codigo del pais",
+      "Celular",
+      "Pais residencia",
+      "Departamento residencia",
+      "Municipio residencia",
+      "Localidad residencia",
+      "Direccion residencia",
+      "Intereses",
+
+      // INFO ACADEMICA
+      "NOMBRE_COLEGIO",
+      "CIUDAD_COLEGIO",
+      "FECHA_GRADUACION",
+      "Programas de posgrado titulados en la UD",
+
+      // INFO EMPRESARIAL (OPCIONAL)
+      "Nombre de su empresa",
+      "NIT de la empresa",
+      "Sector economico de la empresa",
+      "Sitio web de la empresa",
+      "Fecha de fundacion de la empresa",
+      "Actividades que realiza la empresa",
+      "Necesidades profesionales (satisfaccion)",
+      "Necesidades economicas (satisfaccion)",
+      "Necesidades desarrollo personal (satisfaccion)",
+      "Necesidades con su empresa (satisfaccion)",
+      "Cantidad de empleados",
+      "Cantidad de profesionales o tecnologos empleados",
+      "Cantidad de egresados de la UD profesionales o tecnologos empleados",
+      "Cantidad de empleos operativos, asistenciales o de apoyo generados",
+      // END INFO EMPRESARIAL (OPCIONAL)
+
+      "Principal dificultad a la hora de conseguir trabajo",
+      "Canal de busqueda de empleo",
+      "PROBLEMÁTICAS EN DONDE CONSIDERA QUE HA APORTADO",
+      "Otra PROBLEMÁTICA EN DONDE CONSIDERA QUE HA APORTADO",
+      "Situacion laboral",
+      "Cuánto tiempo (en meses) lleva en esta actividad o trabajo?",
+      "Ingreso o salario (Satisfaccion laboral)",
+      "Cantidad de horas (Satisfaccion laboral)",
+      "Aplicacion de conocimientos de la carrera  (Satisfaccion laboral)",
+      "Retos y desafíos intelectuales (Satisfaccion laboral)",
+      "Oportunidades de ascenso (Satisfaccion laboral)",
+      "Estabilidad (Satisfaccion laboral)",
+      "Ingreso o salario",
+      "Razon de vinculacion",
+      "Otra razon de vinculacion",
+      "Estatus laboral",
+      "Actividades que realiza",
+      "Tipo de contrato",
+      "Sector",
+      "Grupo de actividad economica",
+      "Formas de trabajo Independientes",
+      "Nombre de la empresa en donde labora",
+      "Nombre de la empresa",
+      "Cuales son los productos o servicios",
+      "Ciudad/ municipio / provincia de ubicacion de la empresa",
+      "Operacion de la empresa",
+      "Etapa en que se encuetra la empresa",
+      "En la actualidad, en qué actividad ocupa la mayor parte de su tiempo?",
+      "Desea conseguir un trabajo o realizar una actividad remunerada?",
+      "Durante el ultimo mes, hizo alguna diligencia para conseguir un trabajo o realizar una actividad remunerada?",
+      "Aunque desea trabajar, por qué motivo no hizo diligencias para buscar un trabajo en el ultimo mes?",
+      "Si le resultara algun trabajo remunerado Está disponible para empezar a trabajar?",
+      "Hace cuántos meses ha estado buscando empleo?",
+      "Si desea comentarnos más a detalle acerca de sus aportes, contribuciones o logros, puede hacerlo a continuacion",
+
+      // INFO EMPRESARIAL (OPCIONAL)
+
+    ]
+
+    let textFile = null,
+      makeTextFile = function(text) {
+        let data = new Blob([text], {
+          type: 'text/plain'
+        });
+
+        if (textFile !== null)
+          window.URL.revokeObjectURL(textFile);
+
+        textFile = window.URL.createObjectURL(data);
+
+        return textFile;
+      };
+
+    let btnSend = document.getElementById("btnSend")
+    let btnSendAllVariables = document.getElementById("btnSendAllVariables")
+    let baseUrl = "https://autenticacion.portaloas.udistrital.edu.co/apioas/terceros_crud/v1"
+
+    function eliminarVocalesEspecificaLongitud(str, longitudMax = 20) {
+
+      let resultado = str.replace(/[aeiou]/g, '').replace(/ /g, '');
+      let countOver = 0;
+      let strLength = resultado.length;
+
+      for (let i = 0; i <= strLength; i++) {
+        if (i >= longitudMax) countOver++
+      }
+
+      if (countOver > 0) resultado = resultado.slice(0, -`${countOver}`)
+
+      return resultado;
+    }
+
+    // debugger
+    function cortarEspecificaLongitud(str, longitudMax = 20) {
+      // debugger
+      let resultado = str
+      let countOver = 0;
+      let strLength = resultado.length;
+
+      for (let i = 0; i <= strLength; i++)
+        if (i >= longitudMax) countOver++
+      if (countOver > 0) resultado = resultado.slice(0, -`${countOver}`)
+      return resultado;
+    }
+
+    btnSend.addEventListener('click', async () => {
+      let variableName = document.getElementById("variableName").value
+      let access_token = document.getElementById("access_token").value
+
+      let headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'authorization': 'Bearer ' + access_token,
+      }
+
+      let variableAbbr = eliminarVocalesEspecificaLongitud(variableName, 20)
+
+      console.log(variableAbbr.length)
+
+      let GICbody = {
+        "Id": null,
+        "Nombre": variableName,
+        "Descripcion": variableName,
+        "CodigoAbreviacion": variableAbbr,
+        "Activo": true
+      }
+
+      let url = "grupo_info_complementaria"
+      const res = await fetch(`${baseUrl}/${url}`, {
+        method: 'POST',
+        body: JSON.stringify(GICbody),
+        headers: headers
+      });
+
+      const data = await res.json();
+      console.log(data)
+
+      if (data && data.Id) {
+        let ICbody = {
+          "Activo": true,
+          "CodigoAbreviacion": GICbody.CodigoAbreviacion,
+          "GrupoInfoComplementariaId": data,
+          "Id": null,
+          "Nombre": variableName.toUpperCase(),
+          "TipoDeDato": "string"
+        }
+
+        url = "info_complementaria"
+
+        const res = await fetch(`${baseUrl}/${url}`, {
+          method: 'POST',
+          body: JSON.stringify(ICbody),
+          headers: headers
+        });
+
+        const data2 = await res.json();
+
+        console.log(data2)
+
+        let link = document.getElementById('downloadlink');
+        let variableKey = variableName.trim().toUpperCase().split(' ').join('_')
+
+        link.href = makeTextFile(`INFO_COMPLEMENTARIA_IDS: {
+  ${variableKey}: ${data2.Id} 
+}`);
+
+        link.style.display = 'block';
+      }
+    })
+
+    let objVariablesIDS = {}
+    btnSendAllVariables.addEventListener('click', async () => {
+      let access_token = document.getElementById("access_token").value
+
+      let headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'authorization': 'Bearer ' + access_token,
+      }
+
+      // debugger
+      let variablesIdsStrFull = '';
+      let variablesLength = variables.length;
+      for (let i = 0; i < variablesLength; i++) {
+        // debugger
+        console.log(variables[i])
+        let variableItemName = variables[i] ? cortarEspecificaLongitud(variables[i], 98) : ''
+        if (!variableItemName) return false;
+        let variableAbbr = eliminarVocalesEspecificaLongitud(variables[i], 20)
+
+        let GICbody = {
+          "Id": null,
+          "Nombre": variableItemName,
+          "Descripcion": variableItemName,
+          "CodigoAbreviacion": variableAbbr,
+          "Activo": true
+        }
+
+        let url = "grupo_info_complementaria"
+        const res = await fetch(`${baseUrl}/${url}`, {
+          method: 'POST',
+          body: JSON.stringify(GICbody),
+          headers: headers
+        });
+
+        const data = await res.json();
+        console.log(data)
+
+        if (data && data.Id) {
+          let ICbody = {
+            "Activo": true,
+            "CodigoAbreviacion": GICbody.CodigoAbreviacion,
+            "GrupoInfoComplementariaId": data,
+            "Id": null,
+            "Nombre": variableItemName.toUpperCase(),
+            "TipoDeDato": "string"
+          }
+
+          url = "info_complementaria"
+
+          const res = await fetch(`${baseUrl}/${url}`, {
+            method: 'POST',
+            body: JSON.stringify(ICbody),
+            headers: headers
+          });
+
+          const data2 = await res.json();
+          let newVariableKey = variableItemName.replace(/[^\w\s]/gi, '').trim().toUpperCase().split(' ').join('_').toString()
+          console.log(newVariableKey)
+          variablesIdsStrFull += `\n${newVariableKey.toString()}: ${data2.Id.toString()},`
+          Object.defineProperty(objVariablesIDS, newVariableKey, {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: data2.Id
+          });
+          // objVariablesIDS[newVariableKey] = data2.Id
+        }
+      }
+
+      let variablesIdsStr = ``
+
+      for (const keyVariable in objVariablesIDS) {
+        console.log(`
+        \n${keyVariable}: ${objVariablesIDS[keyVariable]},
+        `)
+        variablesIdsStr += `${keyVariable}: ${objVariablesIDS[keyVariable]},`
+      }
+
+      console.log(variablesIdsStr)
+      console.log(variablesIdsStrFull)
+
+      let link = document.getElementById('downloadlink');
+      link.href = makeTextFile(`INFO_COMPLEMENTARIA_ID: {${variablesIdsStrFull}}`);
+      link.style.display = 'block';
+
+      document.getElementById('ICsTxts').innerHTML = JSON.stringify(objVariablesIDS)
+    })
+  </script>
+
+</body>
+
+</html>
