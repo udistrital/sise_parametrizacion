@@ -5,22 +5,46 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <title>ETL TERCEROS_CRUD</title>
 </head>
 
 <body>
 
-  <label for="variableName">Ingrese nombre de variable SISE:</label>
-  <input type="text" id="variableName" placeholder="Ingrese nombre de variable">
-  <input type="text" id="access_token" placeholder="Ingrese token">
-  <button type="button" id="btnSend">Generar variable ingresada</button>
-  <button type="button" id="btnSendAllVariables">Generar todas las variables definidas internamente</button>
-  <a download="info_complementarias_variables.txt" id="downloadlink" style="display: none">Descargar info_complementaria</a>
+  <div class="container mt-4">
+    <div class="row justify-content-center d-flex">
+      <div class="col-md-6">
+        <h1>Generar una sola variable:</h1>
+        <label for="variableName">Ingrese nombre de variable SISE:</label>
+        <input class="form-control mb-2" type="text" id="variableName" placeholder="Ingrese nombre de variable">
+        <input class="form-control" type="text" id="access_token" placeholder="Ingrese token">
 
-  <div id="ICsTxts"></div>
+        <div class="row m-3">
+          <div class="col-md-6">
+            <button type="button" class="btn btn-primary" id="btnSend">Generar variable ingresada</button>
+          </div>
+          <div class="col-md-6">
+            <button type="button" class="btn btn-primary" id="btnSendAllVariables">Generar todas las variables definidas internamente 📃</button>
+          </div>
+        </div>
+        <a download="info_complementarias_variables.txt" id="downloadlink" style="display: none">Descargar info_complementaria</a>
+        <div id="ICsTxts"></div>
+
+      </div>
+
+      <div class="col-md-8 mt-5 pt-3">
+        <h2>Listado variables definidas internamente:</h2>
+        <div id="variablesArr"></div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    // "Localidades", // DE ESTE SOLO SE NECESITA EL G.I.C
     let variables = [
       // INFO PERSONAL
       "Genero",
@@ -100,9 +124,41 @@
       "Hace cuántos meses ha estado buscando empleo?",
       "Si desea comentarnos más a detalle acerca de sus aportes, contribuciones o logros, puede hacerlo a continuacion",
 
-      // INFO EMPRESARIAL (OPCIONAL)
-
+      // INFO EMPRENDIMIENTO VARIABLES
+      "MOTIVACION_EMPRENDER",
+      "DESARROLLADO_PROTOTIPO_MERCADO",
+      "TIENE_INTERES_DESARROLLAR_PROTOTIPO",
+      "PRODUCTOS_SERVICIOS_PROYECTA_SON",
+      "QUE _TANTO_INTERES_CREAR_EMPRESA",
+      "CUANTO_TIEMPO_DEDICAR_PROYECTO_NEGOCIO",
+      "TIPO_EMPRENDIMIENTO",
+      "TECNOLOGIAS_PROYECTO",
+      "TECNOLOGIAS_PROYECTO_OTRO",
+      "HERRAMIENTAS_RECURSOS_EMPRENDIMIENTO",
+      "HERRAMIENTAS_RECURSOS_EMPRENDIMIENTO_OTRO",
+      "CUALES_TEMATICAS_ORIENTACION",
+      "HA_VENDIDO_PRODUCTO_SERVICIO",
+      "QUIEN_VENDIDO_PRODUCTO_SERVICIO",
+      "CANALES_EMPLEO_VENDER_PRODUCTO",
+      "CANALES_EMPLEO_VENDER_PRODUCTO_OTRO",
+      "COMO_OBTUVO_CAPITAL_VENDER",
+      "COMO_OBTUVO_CAPITAL_VENDER_OTRO",
+      "CONOCE_TRAMITES_PARA_EMPRENDIMIENTO",
+      "CONOCE_ASPECTOS_TRIBUTARIOS_PROYECTO",
+      "PROCESO_CONTRATACION_CLIENTES_PROVEEDORES",
+      "PROCESO_CONTRATACION_EMPLEADOS",
+      "RECURSOS_INICIAR_EMPRESA",
+      "RECURSOS_INICIAR_EMPRESA_OTRO",
+      "ESTRUCTURA_COSTOS_INGRESOS",
+      "ASPECTOS_DEFINIDOS_EMPRENDIMIENTO",
     ]
+
+    variables.forEach(varia => {
+
+      let variableBox = document.createElement("p");
+      variableBox.textContent = varia
+      document.getElementById("variablesArr").appendChild(variableBox)
+    })
 
     let textFile = null,
       makeTextFile = function(text) {
