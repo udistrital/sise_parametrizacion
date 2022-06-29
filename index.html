@@ -15,7 +15,10 @@
   <div class="container mt-4">
     <div class="row justify-content-center d-flex">
       <div class="col-md-6">
-        <h1>Generar una sola variable:</h1>
+        <h1 class="mb-0 pb-0">Generar variables SISE:</h1>
+        <span>Opciones para generar variables:</span>
+        <span class="text-muted mt-0 pt-0 d-block">- Tienes opción para generar variables basado en un arreglo de strings definido internamente en el código</span>
+        <span class="text-muted mt-0 pt-0 d-block mb-4">- Tienes opción para generar una a una las variables</span>
         <label for="variableName">Ingrese nombre de variable SISE:</label>
         <input class="form-control mb-2" type="text" id="variableName" placeholder="Ingrese nombre de variable">
         <input class="form-control" type="text" id="access_token" placeholder="Ingrese token">
@@ -28,12 +31,12 @@
             <button type="button" class="btn btn-primary" id="btnSendAllVariables">Generar todas las variables definidas internamente 📃</button>
           </div>
         </div>
-        <a download="info_complementarias_variables.txt" id="downloadlink" style="display: none">Descargar info_complementaria</a>
+        <a download="info_complementarias_variables.txt" id="downloadlink" style="display: none">Descargar variables con IDs (DEBEN IR EN LOS ENVIRONMENT DEL SISE)</a>
         <div id="ICsTxts"></div>
 
       </div>
 
-      <div class="col-md-8 mt-5 pt-3">
+      <div class="col-md-8 mt-3 pt-3">
         <h2>Listado variables definidas internamente:</h2>
         <div id="variablesArr"></div>
       </div>
@@ -152,6 +155,35 @@
       "ESTRUCTURA_COSTOS_INGRESOS",
       "ASPECTOS_DEFINIDOS_EMPRENDIMIENTO",
     ]
+
+    // let variables = [
+    //   "MOTIVACION_EMPRENDER",
+    //   "DESARROLLADO_PROTOTIPO_MERCADO",
+    //   "TIENE_INTERES_DESARROLLAR_PROTOTIPO",
+    //   "PRODUCTOS_SERVICIOS_PROYECTA_SON",
+    //   "QUE _TANTO_INTERES_CREAR_EMPRESA",
+    //   "CUANTO_TIEMPO_DEDICAR_PROYECTO_NEGOCIO",
+    //   "TIPO_EMPRENDIMIENTO",
+    //   "TECNOLOGIAS_PROYECTO",
+    //   "TECNOLOGIAS_PROYECTO_OTRO",
+    //   "HERRAMIENTAS_RECURSOS_EMPRENDIMIENTO",
+    //   "HERRAMIENTAS_RECURSOS_EMPRENDIMIENTO_OTRO",
+    //   "CUALES_TEMATICAS_ORIENTACION",
+    //   "HA_VENDIDO_PRODUCTO_SERVICIO",
+    //   "QUIEN_VENDIDO_PRODUCTO_SERVICIO",
+    //   "CANALES_EMPLEO_VENDER_PRODUCTO",
+    //   "CANALES_EMPLEO_VENDER_PRODUCTO_OTRO",
+    //   "COMO_OBTUVO_CAPITAL_VENDER",
+    //   "COMO_OBTUVO_CAPITAL_VENDER_OTRO",
+    //   "CONOCE_TRAMITES_PARA_EMPRENDIMIENTO",
+    //   "CONOCE_ASPECTOS_TRIBUTARIOS_PROYECTO",
+    //   "PROCESO_CONTRATACION_CLIENTES_PROVEEDORES",
+    //   "PROCESO_CONTRATACION_EMPLEADOS",
+    //   "RECURSOS_INICIAR_EMPRESA",
+    //   "RECURSOS_INICIAR_EMPRESA_OTRO",
+    //   "ESTRUCTURA_COSTOS_INGRESOS",
+    //   "ASPECTOS_DEFINIDOS_EMPRENDIMIENTO",
+    // ]
 
     variables.forEach(varia => {
 
