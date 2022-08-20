@@ -7,12 +7,92 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
+  <style>
+    [class*=loader-] {
+      display: inline-block;
+      width: 5em;
+      height: 5em;
+      color: inherit;
+      z-index: 200;
+      vertical-align: middle;
+      pointer-events: none;
+    }
+
+    .loader-box {
+      z-index: 100 !important;
+      position: relative;
+      width: 100%;
+      /* 
+      height: 100%; */
+      justify-content: center;
+      /* background: aquamarine; */
+      text-align: center;
+      display: flex;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    .loader-08 {
+      position: absolute;
+      /* width: 100%; */
+      /* height: 100%; */
+    }
+
+    .loader-08:before,
+    .loader-08:after {
+      content: "";
+      width: inherit;
+      height: inherit;
+      border-radius: 50%;
+      background-color: currentcolor;
+      opacity: 0.6;
+      position: absolute;
+      top: 0;
+      left: 0;
+      -webkit-animation: loader-08 2s infinite ease-in-out;
+      animation: loader-08 2s infinite ease-in-out;
+    }
+
+    .loader-08:after {
+      -webkit-animation-delay: -1s;
+      animation-delay: -1s;
+    }
+
+    @-webkit-keyframes loader-08 {
+
+      0%,
+      100% {
+        transform: scale(0);
+      }
+
+      50% {
+        transform: scale(1);
+      }
+    }
+
+    @keyframes loader-08 {
+
+      0%,
+      100% {
+        transform: scale(0);
+      }
+
+      50% {
+        transform: scale(1);
+      }
+    }
+
+    body {
+      z-index: 5 !important;
+    }
+  </style>
+
   <title>ETL TERCEROS_CRUD</title>
 </head>
 
 <body>
-
-  <div class="container mt-4">
+  <div class="container mt-4 position-relative">
     <div class="row justify-content-center d-flex">
       <div class="col-md-6">
         <h1 class="mb-0 pb-0">Generar variables SISE:</h1>
@@ -31,6 +111,11 @@
             <button type="button" class="btn btn-primary" id="btnSendAllVariables">Generar todas las variables definidas internamente 📃</button>
           </div>
         </div>
+
+        <div class="loader-box d-none" id="loader">
+          <div class="loader-08"></div>
+        </div>
+
         <a download="info_complementarias_variables.txt" id="downloadlink" style="display: none">Descargar variables con IDs (DEBEN IR EN LOS ENVIRONMENT DEL SISE)</a>
         <div id="ICsTxts"></div>
 
@@ -44,13 +129,18 @@
   </div>
 
 
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
     let variables = [
+      // FOTO DE PERFIL
+      "Foto de perfil SISE",
+
       // INFO PERSONAL
-      "Genero",
+      {
+        name: "Genero",
+        type: 'array'
+      },
       "Nacionalidad",
       "Lugar de nacimiento",
       "Estrato",
@@ -156,40 +246,18 @@
       "ASPECTOS_DEFINIDOS_EMPRENDIMIENTO",
     ]
 
-    // let variables = [
-    //   "MOTIVACION_EMPRENDER",
-    //   "DESARROLLADO_PROTOTIPO_MERCADO",
-    //   "TIENE_INTERES_DESARROLLAR_PROTOTIPO",
-    //   "PRODUCTOS_SERVICIOS_PROYECTA_SON",
-    //   "QUE _TANTO_INTERES_CREAR_EMPRESA",
-    //   "CUANTO_TIEMPO_DEDICAR_PROYECTO_NEGOCIO",
-    //   "TIPO_EMPRENDIMIENTO",
-    //   "TECNOLOGIAS_PROYECTO",
-    //   "TECNOLOGIAS_PROYECTO_OTRO",
-    //   "HERRAMIENTAS_RECURSOS_EMPRENDIMIENTO",
-    //   "HERRAMIENTAS_RECURSOS_EMPRENDIMIENTO_OTRO",
-    //   "CUALES_TEMATICAS_ORIENTACION",
-    //   "HA_VENDIDO_PRODUCTO_SERVICIO",
-    //   "QUIEN_VENDIDO_PRODUCTO_SERVICIO",
-    //   "CANALES_EMPLEO_VENDER_PRODUCTO",
-    //   "CANALES_EMPLEO_VENDER_PRODUCTO_OTRO",
-    //   "COMO_OBTUVO_CAPITAL_VENDER",
-    //   "COMO_OBTUVO_CAPITAL_VENDER_OTRO",
-    //   "CONOCE_TRAMITES_PARA_EMPRENDIMIENTO",
-    //   "CONOCE_ASPECTOS_TRIBUTARIOS_PROYECTO",
-    //   "PROCESO_CONTRATACION_CLIENTES_PROVEEDORES",
-    //   "PROCESO_CONTRATACION_EMPLEADOS",
-    //   "RECURSOS_INICIAR_EMPRESA",
-    //   "RECURSOS_INICIAR_EMPRESA_OTRO",
-    //   "ESTRUCTURA_COSTOS_INGRESOS",
-    //   "ASPECTOS_DEFINIDOS_EMPRENDIMIENTO",
-    // ]
-
     variables.forEach(varia => {
 
+      let variableSTR = typeof varia == 'object' ?
+        `<strong>${varia.name}</strong>` :
+        varia
+
       let variableBox = document.createElement("p");
-      variableBox.textContent = varia
-      document.getElementById("variablesArr").appendChild(variableBox)
+
+      variableBox.innerHTML = variableSTR
+
+      document.getElementById("variablesArr")
+        .appendChild(variableBox)
     })
 
     let textFile = null,
@@ -238,105 +306,72 @@
       return resultado;
     }
 
+    function showLoader(bool) {
+      let loader = document.getElementById("loader")
+      let buttons = document.querySelectorAll('button')
+      let inputs = document.querySelectorAll('input')
+
+      if (bool) {
+        buttons.forEach(button => button.disabled = true)
+        inputs.forEach(input => input.disabled = true)
+
+        loader.classList.remove("d-none")
+        loader.classList.add("d-block")
+      } else {
+        buttons.forEach(button => button.disabled = false)
+        inputs.forEach(input => input.disabled = false)
+
+        loader.classList.remove("d-block")
+        loader.classList.add("d-none")
+      }
+    }
+
+
+    // Generar una variable
     btnSend.addEventListener('click', async () => {
-      let variableName = document.getElementById("variableName").value
-      let access_token = document.getElementById("access_token").value
+      showLoader(true)
+      try {
 
-      let headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'authorization': 'Bearer ' + access_token,
-      }
+        let variableName = document.getElementById("variableName").value
+        let access_token = document.getElementById("access_token").value
 
-      let variableAbbr = eliminarVocalesEspecificaLongitud(variableName, 20)
-
-      console.log(variableAbbr.length)
-
-      let GICbody = {
-        "Id": null,
-        "Nombre": variableName,
-        "Descripcion": variableName,
-        "CodigoAbreviacion": variableAbbr,
-        "Activo": true
-      }
-
-      let url = "grupo_info_complementaria"
-      const res = await fetch(`${baseUrl}/${url}`, {
-        method: 'POST',
-        body: JSON.stringify(GICbody),
-        headers: headers
-      });
-
-      const data = await res.json();
-      console.log(data)
-
-      if (data && data.Id) {
-        let ICbody = {
-          "Activo": true,
-          "CodigoAbreviacion": GICbody.CodigoAbreviacion,
-          "GrupoInfoComplementariaId": data,
-          "Id": null,
-          "Nombre": variableName.toUpperCase(),
-          "TipoDeDato": "string"
+        if (!access_token || !access_token.trim()) {
+          showLoader(false)
+          return alert("Ingresa el access_token, puedes extraerlo de una sesión de la app del SISE(sise_cliente). En el localStorage 🤨")
         }
 
-        url = "info_complementaria"
+        btnSend.disabled = true
 
-        const res = await fetch(`${baseUrl}/${url}`, {
-          method: 'POST',
-          body: JSON.stringify(ICbody),
-          headers: headers
-        });
+        let headers = {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'authorization': 'Bearer ' + access_token,
+        }
 
-        const data2 = await res.json();
+        let variableAbbr = eliminarVocalesEspecificaLongitud(variableName, 20)
 
-        console.log(data2)
-
-        let link = document.getElementById('downloadlink');
-        let variableKey = variableName.trim().toUpperCase().split(' ').join('_')
-
-        link.href = makeTextFile(`INFO_COMPLEMENTARIA_IDS: {
-  ${variableKey}: ${data2.Id} 
-}`);
-
-        link.style.display = 'block';
-      }
-    })
-
-    let objVariablesIDS = {}
-    btnSendAllVariables.addEventListener('click', async () => {
-      let access_token = document.getElementById("access_token").value
-
-      let headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'authorization': 'Bearer ' + access_token,
-      }
-
-      // debugger
-      let variablesIdsStrFull = '';
-      let variablesLength = variables.length;
-      for (let i = 0; i < variablesLength; i++) {
-        // debugger
-        console.log(variables[i])
-        let variableItemName = variables[i] ? cortarEspecificaLongitud(variables[i], 98) : ''
-        if (!variableItemName) return false;
-        let variableAbbr = eliminarVocalesEspecificaLongitud(variables[i], 20)
+        console.log(variableAbbr.length)
 
         let GICbody = {
           "Id": null,
-          "Nombre": variableItemName,
-          "Descripcion": variableItemName,
+          "Nombre": variableName,
+          "Descripcion": variableName,
           "CodigoAbreviacion": variableAbbr,
           "Activo": true
         }
 
         let url = "grupo_info_complementaria"
+
         const res = await fetch(`${baseUrl}/${url}`, {
           method: 'POST',
           body: JSON.stringify(GICbody),
           headers: headers
-        });
+        })
+
+        if (res.status == 401){
+          showLoader(false)
+          return alert("access_token invalido, puedes obtener uno del localstorage de la app sise en ejecución y logueado")
+        }
 
         const data = await res.json();
         console.log(data)
@@ -347,7 +382,7 @@
             "CodigoAbreviacion": GICbody.CodigoAbreviacion,
             "GrupoInfoComplementariaId": data,
             "Id": null,
-            "Nombre": variableItemName.toUpperCase(),
+            "Nombre": variableName.toUpperCase(),
             "TipoDeDato": "string"
           }
 
@@ -360,36 +395,218 @@
           });
 
           const data2 = await res.json();
-          let newVariableKey = variableItemName.replace(/[^\w\s]/gi, '').trim().toUpperCase().split(' ').join('_').toString()
-          console.log(newVariableKey)
-          variablesIdsStrFull += `\n${newVariableKey.toString()}: ${data2.Id.toString()},`
-          Object.defineProperty(objVariablesIDS, newVariableKey, {
-            enumerable: true,
-            configurable: true,
-            writable: true,
-            value: data2.Id
-          });
-          // objVariablesIDS[newVariableKey] = data2.Id
+
+          console.log(data2)
+
+          let link = document.getElementById('downloadlink');
+          let variableKey = variableName.trim().toUpperCase().split(' ').join('_')
+
+          link.href = makeTextFile(`Colocar lo siguiente junto con las variables de entorno del SISE, en caso de que ya este salvar lo anterior en caso de que se pueda necesitar y reemplzar el objeto: \n\nINFO_COMPLEMENTARIA_IDS: {
+     ${variableKey}: ${data2.Id} 
+     }`);
+
+          link.style.display = 'block';
         }
+
+        btnSend.disabled = false
+
+      } catch (error) {
+        showLoader(false)
+        console.log('aaa error')
+        console.log(error)
       }
 
-      let variablesIdsStr = ``
+      showLoader(false)
 
-      for (const keyVariable in objVariablesIDS) {
-        console.log(`
-        \n${keyVariable}: ${objVariablesIDS[keyVariable]},
-        `)
-        variablesIdsStr += `${keyVariable}: ${objVariablesIDS[keyVariable]},`
+    })
+
+    // Generar todas las variables
+    let objVariablesIDS = {}
+    btnSendAllVariables.addEventListener('click', async () => {
+      showLoader(true)
+      try {
+        let access_token = document.getElementById("access_token").value
+
+        if (!access_token || !access_token.trim()){
+          showLoader(false)
+          return alert("Ingresa el access_token, puedes extraerlo de una sesión de la app del SISE(sise_cliente). En el localStorage 🤨")
+        }
+
+        let headers = {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'authorization': 'Bearer ' + access_token,
+        }
+
+        btnSendAllVariables.disabled = true
+
+        // debugger
+        let variablesIdsStrFull = '';
+        let variablesLength = variables.length;
+        for (let i = 0; i < variablesLength; i++) {
+          // debugger
+          console.log(variables[i])
+          let variableObjFlag = false
+          if (typeof variables[i] == 'object') {
+            variableObjFlag = true
+          }
+
+          let variableBase = variableObjFlag ?
+            variables[i].name :
+            variables[i]
+
+          let variableItemName = variableBase ? cortarEspecificaLongitud(variableBase, 98) : ''
+          if (!variableItemName) return false;
+          let variableAbbr = eliminarVocalesEspecificaLongitud(variableBase, 20)
+
+          let GICbody = {
+            "Id": null,
+            "Nombre": variableItemName,
+            "Descripcion": variableItemName,
+            "CodigoAbreviacion": variableAbbr,
+            "Activo": true
+          }
+
+          let url = "grupo_info_complementaria"
+
+          const res = await fetch(`${baseUrl}/${url}`, {
+            method: 'POST',
+            body: JSON.stringify(GICbody),
+            headers: headers
+          });
+
+          console.log('status code: ', res.status);
+
+          if (res.status == 401){
+            showLoader(false)
+            return alert("access_token invalido, puedes obtener uno del localstorage de la app sise en ejecución y logueado")
+          }
+
+          const data = await res.json();
+          console.log(data)
+          console.log(data.Id)
+
+          if (!data || !data.Id){
+            showLoader(false)
+            console.log('here');
+
+            return console.error('Error al generar el grupo info complementaria de ' + variableItemName)
+          }
+
+          if (variableObjFlag) {
+            // Genera muchas variables y coloca el arreglo en el objeto que quedará en el txt
+            let variableNamesValues = prompt(`Ingresa los valores para ${variableItemName} separados por comas y sin espacios`);
+
+            console.log(typeof variableNamesValues);
+            console.log(variableNamesValues);
+
+            if (typeof variableNamesValues != 'string'){
+              showLoader(false)
+              return console.error('Error al generar el grupo info complementarias de ' + variableItemName);
+            }
+
+            variableNamesValues = variableNamesValues.toString().split(',')
+
+            let variableArrIC = []
+
+            for (let i = 0; i <= variableNamesValues.length; i++) {
+
+              let ICbody = {
+                "Activo": true,
+                "CodigoAbreviacion": GICbody.CodigoAbreviacion,
+                "GrupoInfoComplementariaId": data,
+                "Id": null,
+                "Nombre": variableItemName.toUpperCase(),
+                "TipoDeDato": "string"
+              }
+
+              url = "info_complementaria"
+
+              const resIC = await fetch(`${baseUrl}/${url}`, {
+                method: 'POST',
+                body: JSON.stringify(ICbody),
+                headers: headers
+              });
+
+              const variableInfoComplementaria = await resIC.json();
+
+              variableArrIC.push(variableInfoComplementaria.Id.toString())
+            }
+
+            let newVariableKey = variableItemName.replace(/[^\w\s]/gi, '').trim().toUpperCase().split(' ').join('_').toString()
+
+            // Se llenan con el id de las variables
+            variablesIdsStrFull += `\n${newVariableKey.toString()}: [${variableArrIC}],`
+
+            Object.defineProperty(objVariablesIDS, newVariableKey, {
+              enumerable: true,
+              configurable: true,
+              writable: true,
+              value: variableArrIC
+            });
+          } else {
+            // Generar variable string
+            let ICbody = {
+              "Activo": true,
+              "CodigoAbreviacion": GICbody.CodigoAbreviacion,
+              "GrupoInfoComplementariaId": data,
+              "Id": null,
+              "Nombre": variableItemName.toUpperCase(),
+              "TipoDeDato": "string"
+            }
+
+            url = "info_complementaria"
+
+            const resIC = await fetch(`${baseUrl}/${url}`, {
+              method: 'POST',
+              body: JSON.stringify(ICbody),
+              headers: headers
+            });
+
+            const data2 = await resIC.json();
+
+            let newVariableKey = variableItemName.replace(/[^\w\s]/gi, '').trim().toUpperCase().split(' ').join('_').toString()
+            console.log(newVariableKey)
+
+            // Se llenan con el id de las variables
+            variablesIdsStrFull += `\n${newVariableKey.toString()}: ${data2.Id.toString()},`
+
+            Object.defineProperty(objVariablesIDS, newVariableKey, {
+              enumerable: true,
+              configurable: true,
+              writable: true,
+              value: data2.Id
+            });
+          }
+
+        }
+
+        let variablesIdsStr = ``
+
+        for (const keyVariable in objVariablesIDS) {
+          console.log(`
+          \n${keyVariable}: ${objVariablesIDS[keyVariable]},
+          `)
+
+          variablesIdsStr += `${keyVariable}: ${objVariablesIDS[keyVariable]},`
+        }
+
+        console.log(variablesIdsStr)
+        console.log(variablesIdsStrFull)
+
+        let link = document.getElementById('downloadlink');
+        link.href = makeTextFile(`INFO_COMPLEMENTARIA_IDS: {${variablesIdsStrFull}}`);
+        link.style.display = 'block';
+
+        document.getElementById('ICsTxts').innerHTML = JSON.stringify(objVariablesIDS)
+
+        btnSendAllVariables.disabled = false
+
+      } catch (e) {
+        showLoader(false)
+        console.log(e)
       }
-
-      console.log(variablesIdsStr)
-      console.log(variablesIdsStrFull)
-
-      let link = document.getElementById('downloadlink');
-      link.href = makeTextFile(`INFO_COMPLEMENTARIA_ID: {${variablesIdsStrFull}}`);
-      link.style.display = 'block';
-
-      document.getElementById('ICsTxts').innerHTML = JSON.stringify(objVariablesIDS)
+      showLoader(false)
     })
   </script>
 
