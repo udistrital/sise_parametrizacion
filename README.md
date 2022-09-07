@@ -52,10 +52,7 @@ click derecho en el html y seleccionar "Open with Live Server"
 
 Pruebas unitarias powered by Jest
 ```bash
-# run unit test
-npm run test
-# Runt linter + unit test
-npm run test:ui
+# Does not apply
 ```
 
 ## Estado CI
