@@ -6,88 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <style>
-    [class*=loader-] {
-      display: inline-block;
-      width: 5em;
-      height: 5em;
-      color: inherit;
-      z-index: 200;
-      vertical-align: middle;
-      pointer-events: none;
-    }
-
-    .loader-box {
-      z-index: 100 !important;
-      position: relative;
-      width: 100%;
-      /* 
-      height: 100%; */
-      justify-content: center;
-      /* background: aquamarine; */
-      text-align: center;
-      display: flex;
-      align-items: center;
-      margin: 0;
-      padding: 0;
-    }
-
-    .loader-08 {
-      position: absolute;
-      /* width: 100%; */
-      /* height: 100%; */
-    }
-
-    .loader-08:before,
-    .loader-08:after {
-      content: "";
-      width: inherit;
-      height: inherit;
-      border-radius: 50%;
-      background-color: currentcolor;
-      opacity: 0.6;
-      position: absolute;
-      top: 0;
-      left: 0;
-      -webkit-animation: loader-08 2s infinite ease-in-out;
-      animation: loader-08 2s infinite ease-in-out;
-    }
-
-    .loader-08:after {
-      -webkit-animation-delay: -1s;
-      animation-delay: -1s;
-    }
-
-    @-webkit-keyframes loader-08 {
-
-      0%,
-      100% {
-        transform: scale(0);
-      }
-
-      50% {
-        transform: scale(1);
-      }
-    }
-
-    @keyframes loader-08 {
-
-      0%,
-      100% {
-        transform: scale(0);
-      }
-
-      50% {
-        transform: scale(1);
-      }
-    }
-
-    body {
-      z-index: 5 !important;
-    }
-  </style>
-
+  <link rel="stylesheet" href="./styles.css">
   <title>ETL TERCEROS_CRUD</title>
 </head>
 
@@ -118,7 +37,6 @@
 
         <a download="info_complementarias_variables.txt" id="downloadlink" style="display: none">Descargar variables con IDs (DEBEN IR EN LOS ENVIRONMENT DEL SISE)</a>
         <div id="ICsTxts"></div>
-
       </div>
 
       <div class="col-md-8 mt-3 pt-3">
@@ -127,7 +45,6 @@
       </div>
     </div>
   </div>
-
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -244,6 +161,18 @@
       "RECURSOS_INICIAR_EMPRESA_OTRO",
       "ESTRUCTURA_COSTOS_INGRESOS",
       "ASPECTOS_DEFINIDOS_EMPRENDIMIENTO",
+
+      // INFO ESTUDIANTES VARIABLES
+      "¿En la actualidad tiene personas a cargo?",
+      "Con motivo de su próxima graduación, ¿Cuál es su nivel de expectativa e incertidumbre frente a la obtención de su título?",
+      "Que aspectos o competencias le generan inseguridad frente a su perfil profesional",
+      "Desea obtener información del Seminario de empleabilidad",
+      "Seleccione la Facultad de la que es egresado",
+      "Seleccione su carrera",
+      "Indiqué la fecha programada o estimada de su graduación",
+      "Después de su graduación, ¿cuál de las siguientes opciones de formación ha pensado realizar?",
+      "¿Tiene conocimiento de los beneficios aplicables en programas de posgrados para egresados?",
+      "Seleccione los posgrados de su interés y en los cuales desea obtener información",
     ]
 
     variables.forEach(varia => {
@@ -326,99 +255,32 @@
       }
     }
 
+    function formatVariableStringToEnv(str) {
+      return str.replace(/[^\w\s]/gi, '').trim().toUpperCase().split(' ').join('_').toString()
+    }
 
-    // Generar una variable
-    btnSend.addEventListener('click', async () => {
-      showLoader(true)
-      try {
+    async function getAPITercerosData(headers) {
+      // Obtienes grupo_info_complementarias
+      const GICs = await fetch(`${baseUrl}/grupo_info_complementaria?limit=-1`, {
+        method: 'GET',
+        headers: headers
+      });
 
-        let variableName = document.getElementById("variableName").value
-        let access_token = document.getElementById("access_token").value
+      const GICsJson = await GICs.json()
 
-        if (!access_token || !access_token.trim()) {
-          showLoader(false)
-          return alert("Ingresa el access_token, puedes extraerlo de una sesión de la app del SISE(sise_cliente). En el localStorage 🤨")
-        }
+      // Obtienes info_complementarias
+      const ICs = await fetch(`${baseUrl}/info_complementaria?limit=-1`, {
+        method: 'GET',
+        headers: headers
+      });
 
-        btnSend.disabled = true
+      const ICsJson = await ICs.json()
 
-        let headers = {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'authorization': 'Bearer ' + access_token,
-        }
-
-        let variableAbbr = eliminarVocalesEspecificaLongitud(variableName, 20)
-
-        console.log(variableAbbr.length)
-
-        let GICbody = {
-          "Id": null,
-          "Nombre": variableName,
-          "Descripcion": variableName,
-          "CodigoAbreviacion": variableAbbr,
-          "Activo": true
-        }
-
-        let url = "grupo_info_complementaria"
-
-        const res = await fetch(`${baseUrl}/${url}`, {
-          method: 'POST',
-          body: JSON.stringify(GICbody),
-          headers: headers
-        })
-
-        if (res.status == 401){
-          showLoader(false)
-          return alert("access_token invalido, puedes obtener uno del localstorage de la app sise en ejecución y logueado")
-        }
-
-        const data = await res.json();
-        console.log(data)
-
-        if (data && data.Id) {
-          let ICbody = {
-            "Activo": true,
-            "CodigoAbreviacion": GICbody.CodigoAbreviacion,
-            "GrupoInfoComplementariaId": data,
-            "Id": null,
-            "Nombre": variableName.toUpperCase(),
-            "TipoDeDato": "string"
-          }
-
-          url = "info_complementaria"
-
-          const res = await fetch(`${baseUrl}/${url}`, {
-            method: 'POST',
-            body: JSON.stringify(ICbody),
-            headers: headers
-          });
-
-          const data2 = await res.json();
-
-          console.log(data2)
-
-          let link = document.getElementById('downloadlink');
-          let variableKey = variableName.trim().toUpperCase().split(' ').join('_')
-
-          link.href = makeTextFile(`Colocar lo siguiente junto con las variables de entorno del SISE, en caso de que ya este salvar lo anterior en caso de que se pueda necesitar y reemplzar el objeto: \n\nINFO_COMPLEMENTARIA_IDS: {
-     ${variableKey}: ${data2.Id} 
-     }`);
-
-          link.style.display = 'block';
-        }
-
-        btnSend.disabled = false
-
-      } catch (error) {
-        showLoader(false)
-        console.log('aaa error')
-        console.log(error)
+      return {
+        GICsJson,
+        ICsJson
       }
-
-      showLoader(false)
-
-    })
+    }
 
     // Generar todas las variables
     let objVariablesIDS = {}
@@ -427,7 +289,7 @@
       try {
         let access_token = document.getElementById("access_token").value
 
-        if (!access_token || !access_token.trim()){
+        if (!access_token || !access_token.trim()) {
           showLoader(false)
           return alert("Ingresa el access_token, puedes extraerlo de una sesión de la app del SISE(sise_cliente). En el localStorage 🤨")
         }
@@ -438,13 +300,17 @@
           'authorization': 'Bearer ' + access_token,
         }
 
+        const dataTERCEROS = await getAPITercerosData(headers)
+
+        const GICsJson = dataTERCEROS.GICsJson
+        const ICsJson = dataTERCEROS.ICsJson
+
         btnSendAllVariables.disabled = true
 
-        // debugger
         let variablesIdsStrFull = '';
         let variablesLength = variables.length;
+
         for (let i = 0; i < variablesLength; i++) {
-          // debugger
           console.log(variables[i])
           let variableObjFlag = false
           if (typeof variables[i] == 'object') {
@@ -456,7 +322,23 @@
             variables[i]
 
           let variableItemName = variableBase ? cortarEspecificaLongitud(variableBase, 98) : ''
-          if (!variableItemName) return false;
+
+          if (!variableItemName) {
+            return false;
+          }
+
+          let isGICDuplicated = false
+          GICsJson.forEach(GIC => {
+            if (GIC.Nombre == variableItemName || GIC.Descripcion == variableItemName) {
+              isGICDuplicated = true
+            }
+          })
+
+          if (isGICDuplicated) {
+            showLoader(false)
+            continue;
+          }
+
           let variableAbbr = eliminarVocalesEspecificaLongitud(variableBase, 20)
 
           let GICbody = {
@@ -469,15 +351,14 @@
 
           let url = "grupo_info_complementaria"
 
+          // Genera grupo_info_complementaria
           const res = await fetch(`${baseUrl}/${url}`, {
             method: 'POST',
             body: JSON.stringify(GICbody),
             headers: headers
           });
 
-          console.log('status code: ', res.status);
-
-          if (res.status == 401){
+          if (res.status == 401) {
             showLoader(false)
             return alert("access_token invalido, puedes obtener uno del localstorage de la app sise en ejecución y logueado")
           }
@@ -486,7 +367,7 @@
           console.log(data)
           console.log(data.Id)
 
-          if (!data || !data.Id){
+          if (!data || !data.Id) {
             showLoader(false)
             console.log('here');
 
@@ -494,13 +375,14 @@
           }
 
           if (variableObjFlag) {
+
             // Genera muchas variables y coloca el arreglo en el objeto que quedará en el txt
             let variableNamesValues = prompt(`Ingresa los valores para ${variableItemName} separados por comas y sin espacios`);
 
             console.log(typeof variableNamesValues);
             console.log(variableNamesValues);
 
-            if (typeof variableNamesValues != 'string'){
+            if (typeof variableNamesValues != 'string') {
               showLoader(false)
               return console.error('Error al generar el grupo info complementarias de ' + variableItemName);
             }
@@ -510,6 +392,18 @@
             let variableArrIC = []
 
             for (let i = 0; i <= variableNamesValues.length; i++) {
+
+              let isICDuplicated = false
+              ICsJson.forEach(IC => {
+                if (IC.Nombre == variableItemName.toUpperCase()) {
+                  isICDuplicated = true
+                }
+              })
+
+              if (isICDuplicated) {
+                showLoader(false)
+                continue;
+              }
 
               let ICbody = {
                 "Activo": true,
@@ -533,7 +427,7 @@
               variableArrIC.push(variableInfoComplementaria.Id.toString())
             }
 
-            let newVariableKey = variableItemName.replace(/[^\w\s]/gi, '').trim().toUpperCase().split(' ').join('_').toString()
+            let newVariableKey = formatVariableStringToEnv(variableItemName)
 
             // Se llenan con el id de las variables
             variablesIdsStrFull += `\n${newVariableKey.toString()}: [${variableArrIC}],`
@@ -545,6 +439,17 @@
               value: variableArrIC
             });
           } else {
+            let isICDuplicated = false
+            ICsJson.forEach(IC => {
+              if (IC.Nombre == variableItemName.toUpperCase()) {
+                isICDuplicated = true
+              }
+            })
+
+            if (isICDuplicated) {
+              showLoader(false)
+              continue;
+            }
             // Generar variable string
             let ICbody = {
               "Activo": true,
@@ -565,7 +470,7 @@
 
             const data2 = await resIC.json();
 
-            let newVariableKey = variableItemName.replace(/[^\w\s]/gi, '').trim().toUpperCase().split(' ').join('_').toString()
+            let newVariableKey = formatVariableStringToEnv(variableItemName)
             console.log(newVariableKey)
 
             // Se llenan con el id de las variables
@@ -607,6 +512,129 @@
         console.log(e)
       }
       showLoader(false)
+    })
+
+    // Generar una variable
+    btnSend.addEventListener('click', async () => {
+      showLoader(true)
+
+      try {
+
+        let variableName = document.getElementById("variableName").value
+        let access_token = document.getElementById("access_token").value
+
+        if (!access_token || !access_token.trim()) {
+          showLoader(false)
+          return alert("Ingresa el access_token, puedes extraerlo de una sesión de la app del SISE(sise_cliente). En el localStorage 🤨")
+        }
+
+        btnSend.disabled = true
+
+        let headers = {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'authorization': 'Bearer ' + access_token,
+        }
+
+        const dataTERCEROS = await getAPITercerosData(headers)
+
+        const GICsJson = dataTERCEROS.GICsJson
+        const ICsJson = dataTERCEROS.ICsJson
+
+        let variableAbbr = eliminarVocalesEspecificaLongitud(variableName, 20)
+
+        console.log(variableAbbr.length)
+
+        let isGICDuplicated = false
+        GICsJson.forEach(GIC => {
+          if (GIC.Nombre == variableItemName || GIC.Descripcion == variableItemName) {
+            isGICDuplicated = true
+          }
+        })
+
+        if (isGICDuplicated) {
+          showLoader(false)
+          return alert("Duplicada, ya existe");
+        }
+
+        let GICbody = {
+          "Id": null,
+          "Nombre": variableName,
+          "Descripcion": variableName,
+          "CodigoAbreviacion": variableAbbr,
+          "Activo": true
+        }
+
+        let url = "grupo_info_complementaria"
+
+        const res = await fetch(`${baseUrl}/${url}`, {
+          method: 'POST',
+          body: JSON.stringify(GICbody),
+          headers: headers
+        })
+
+        if (res.status == 401) {
+          showLoader(false)
+          return alert("access_token invalido, puedes obtener uno del localstorage de la app sise en ejecución y logueado")
+        }
+
+        const data = await res.json();
+        console.log(data)
+
+        if (data && data.Id) {
+          let isICDuplicated = false
+          ICsJson.forEach(IC => {
+            if (IC.Nombre == variableName.toUpperCase()) {
+              isICDuplicated = true
+            }
+          })
+
+          if (isICDuplicated) {
+            showLoader(false)
+            return alert("Duplicada, ya existe");
+          }
+
+          let ICbody = {
+            "Activo": true,
+            "CodigoAbreviacion": GICbody.CodigoAbreviacion,
+            "GrupoInfoComplementariaId": data,
+            "Id": null,
+            "Nombre": variableName.toUpperCase(),
+            "TipoDeDato": "string"
+          }
+
+          url = "info_complementaria"
+
+          const res = await fetch(`${baseUrl}/${url}`, {
+            method: 'POST',
+            body: JSON.stringify(ICbody),
+            headers: headers
+          });
+
+          const data2 = await res.json();
+
+          console.log(data2)
+
+          let link = document.getElementById('downloadlink');
+          let variableKey = variableName.trim().toUpperCase().split(' ').join('_')
+
+          link.href = makeTextFile(`Colocar lo siguiente junto con las variables de entorno del SISE, en caso de que ya este salvar lo anterior en caso de que se pueda necesitar y reemplzar el objeto: \n\nINFO_COMPLEMENTARIA_IDS: {
+     ${variableKey}: ${data2.Id} 
+     }`);
+
+          link.style.display = 'block';
+        }
+
+        btnSend.disabled = false
+
+      } catch (error) {
+        showLoader(false)
+        console.log('aaa error')
+        console.log(error)
+      }
+
+      showLoader(false)
+
     })
   </script>
 
