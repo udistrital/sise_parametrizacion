@@ -14,20 +14,43 @@
   <div class="container mt-4 position-relative">
     <div class="row justify-content-center d-flex">
       <div class="col-md-6">
-        <h1 class="mb-0 pb-0">Generar variables SISE:</h1>
-        <span>Opciones para generar variables:</span>
-        <span class="text-muted mt-0 pt-0 d-block">- Tienes opción para generar variables basado en un arreglo de strings definido internamente en el código</span>
-        <span class="text-muted mt-0 pt-0 d-block mb-4">- Tienes opción para generar una a una las variables</span>
-        <label for="variableName">Ingrese nombre de variable SISE:</label>
-        <input class="form-control mb-2" type="text" id="variableName" placeholder="Ingrese nombre de variable">
-        <input class="form-control" type="text" id="access_token" placeholder="Ingrese token">
+        <h1>Opciones para generar variables:</h1>
 
-        <div class="row m-3">
-          <div class="col-md-6">
-            <button type="button" class="btn btn-primary" id="btnSend">Generar variable ingresada</button>
+        <span class="text-muted text-sm mt-0 pt-0 d-block">- Según un arreglo de variables (strings) definido internamente en el código</span>
+
+        <span class="text-muted text-sm mt-0 pt-0 d-block mb-4">- Una a una con grupo nuevo con el mismo nombre o con uno existente</span>
+
+        <h1 class="mb-0 pb-0">Generar variables SISE:</h1>
+        <label for="access_token" class="mt-1" title="Puedes ser de producción o pruebas">Ingrese token:</label>
+        <input oninput="setGroups()" class="form-control" type="text" id="access_token" placeholder="Ingrese token">
+        <p class="text-muted p-0 m-0">Revisa la consola frecuentemente</p>
+
+        <div hidden id="formVariables">
+          <label for="variableName">Ingrese nombre de variable SISE:</label>
+          <input class="form-control mb-1" type="text" id="variableName" placeholder="Ingrese nombre de variable">
+
+          <div class="form-check form-switch mt-0 pt-0">
+            <input class="form-check-input" onchange="toggleNewGroup()" type="checkbox" id="newGroup">
+            <label class="form-check-label" for="newGroup">
+              ¿Generar grupo nuevo con el mismo nombre?
+            </label>
           </div>
-          <div class="col-md-6">
-            <button type="button" class="btn btn-primary" id="btnSendAllVariables">Generar todas las variables definidas internamente 📃</button>
+
+          <div hidden id="groupsBox">
+            <label for="groupsInput" class="form-label">Grupos</label>
+            <input class="form-control" list="list" id="groupsInput" placeholder="Seleccionar...">
+            <datalist id="list"></datalist>
+          </div>
+
+          <div class="row m-3">
+            <div class="col-md-5 m-1">
+              <button type="button" class="btn btn-success w-100" id="btnSend">
+                Generar
+              </button>
+            </div>
+            <!-- <div class="col-md-5 m-1">
+              <button type="button" class="btn btn-primary w-100" id="btnSendAllVariables">Generar todas las variables definidas internamente 📃</button>
+            </div> -->
           </div>
         </div>
 
@@ -206,6 +229,7 @@
     let btnSend = document.getElementById("btnSend")
     let btnSendAllVariables = document.getElementById("btnSendAllVariables")
     let baseUrl = "https://autenticacion.portaloas.udistrital.edu.co/apioas/terceros_crud/v1"
+    let newGroupFlag = false;
 
     function eliminarVocalesEspecificaLongitud(str, longitudMax = 20) {
 
@@ -282,24 +306,100 @@
       }
     }
 
+    function getHeadersAndToken() {
+      let access_token = document.getElementById("access_token").value
+
+      if (!access_token || !access_token.trim() || access_token.length > 36 || access_token.length < 36) {
+        showLoader(false)
+        return console.info("Ingresa el access_token, puedes extraerlo de una sesión de la app del SISE(sise_cliente). En el localStorage 🤨")
+      }
+
+      let headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'authorization': 'Bearer ' + access_token,
+      }
+
+      const form = document.getElementById("formVariables")
+      form.hidden = false
+
+      return {
+        headers,
+        access_token
+      }
+    }
+
+    function toggleNewGroup() {
+      setTimeout(() => {
+        const groupsBox = document.getElementById("groupsBox")
+        const newGroup = document.getElementById("newGroup")
+        if (newGroup.checked) {
+          groupsBox.hidden = true
+          newGroupFlag = true
+        } else {
+          groupsBox.hidden = false
+        }
+      }, 500);
+    }
+
+    async function setGroups() {
+
+      toggleNewGroup()
+
+      const {
+        headers
+      } = getHeadersAndToken() || {}
+
+      if (headers) {
+        const {
+          GICsJson
+        } = await getAPITercerosData(headers)
+
+        console.log(GICsJson)
+
+        const datalist = document.getElementById("list")
+
+        if (Array.isArray(GICsJson)) {
+          GICsJson.forEach(GIC => {
+            let option = document.createElement('option')
+            option.value = GIC.Nombre
+            option.dataset.id = GIC.Id
+            datalist.append(option)
+          })
+        }
+      }
+    }
+
+    function getSelectedValueDatalist() {
+      let options = document.getElementById('list').options;
+      let inputVal = document.getElementById('groupsInput').value;
+      let optionsLength = options.length;
+
+      let datalistValue = {};
+
+      for (let i = 0; i <= optionsLength; i++) {
+        if (options[i] && options[i].value && options[i].value == inputVal) {
+          datalistValue.value = inputVal
+          datalistValue.id = parseInt(options[i].dataset.id)
+          break;
+        }
+      }
+
+      return datalistValue
+    }
+
+    setGroups()
+    console.log(newGroupFlag)
+
     // Generar todas las variables
     let objVariablesIDS = {}
     btnSendAllVariables.addEventListener('click', async () => {
       showLoader(true)
       try {
-        let access_token = document.getElementById("access_token").value
 
-        if (!access_token || !access_token.trim()) {
-          showLoader(false)
-          return alert("Ingresa el access_token, puedes extraerlo de una sesión de la app del SISE(sise_cliente). En el localStorage 🤨")
-        }
-
-        let headers = {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'authorization': 'Bearer ' + access_token,
-        }
-
+        const {
+          headers
+        } = getHeadersAndToken()
         const dataTERCEROS = await getAPITercerosData(headers)
 
         const GICsJson = dataTERCEROS.GICsJson
@@ -516,34 +616,28 @@
 
     // Generar una variable
     btnSend.addEventListener('click', async () => {
+      console.log(newGroupFlag)
+
       showLoader(true)
 
       try {
 
-        let variableName = document.getElementById("variableName").value
-        let access_token = document.getElementById("access_token").value
-
-        if (!access_token || !access_token.trim()) {
-          showLoader(false)
-          return alert("Ingresa el access_token, puedes extraerlo de una sesión de la app del SISE(sise_cliente). En el localStorage 🤨")
-        }
-
-        btnSend.disabled = true
-
-        let headers = {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'authorization': 'Bearer ' + access_token,
-        }
+        const {
+          headers
+        } = getHeadersAndToken()
 
         const dataTERCEROS = await getAPITercerosData(headers)
 
         const GICsJson = dataTERCEROS.GICsJson
         const ICsJson = dataTERCEROS.ICsJson
 
+        let variableName = document.getElementById("variableName").value
+        let variableItemName = variableName ? cortarEspecificaLongitud(variableName, 98) : ''
+        console.log(variableItemName)
+        if (!variableItemName) {
+          return false;
+        }
         let variableAbbr = eliminarVocalesEspecificaLongitud(variableName, 20)
-
-        console.log(variableAbbr.length)
 
         let isGICDuplicated = false
         GICsJson.forEach(GIC => {
@@ -557,31 +651,49 @@
           return alert("Duplicada, ya existe");
         }
 
-        let GICbody = {
-          "Id": null,
-          "Nombre": variableName,
-          "Descripcion": variableName,
-          "CodigoAbreviacion": variableAbbr,
-          "Activo": true
+        let data;
+        if (newGroupFlag) {
+          let GICbody = {
+            "Id": null,
+            "Nombre": variableName,
+            "Descripcion": variableName,
+            "CodigoAbreviacion": variableAbbr,
+            "Activo": true
+          }
+
+          let url = "grupo_info_complementaria"
+
+          const res = await fetch(`${baseUrl}/${url}`, {
+            method: 'POST',
+            body: JSON.stringify(GICbody),
+            headers: headers
+          })
+
+          if (res.status == 401) {
+            showLoader(false)
+            return alert("access_token invalido, puedes obtener uno del localstorage de la app sise en ejecución y logueado")
+          }
+
+          data = await res.json();
+          console.log(data)
+        } else {
+          const {
+            value,
+            id
+          } = getSelectedValueDatalist() || {}
+
+          if (!value || !id) {
+            showLoader(false)
+            return alert("Error, no se pudo obtener el valor de la lista de grupos");
+          }
+
+          data = {
+            "Id": id,
+          }
         }
 
-        let url = "grupo_info_complementaria"
 
-        const res = await fetch(`${baseUrl}/${url}`, {
-          method: 'POST',
-          body: JSON.stringify(GICbody),
-          headers: headers
-        })
-
-        if (res.status == 401) {
-          showLoader(false)
-          return alert("access_token invalido, puedes obtener uno del localstorage de la app sise en ejecución y logueado")
-        }
-
-        const data = await res.json();
-        console.log(data)
-
-        if (data && data.Id) {
+        if (data) {
           let isICDuplicated = false
           ICsJson.forEach(IC => {
             if (IC.Nombre == variableName.toUpperCase()) {
@@ -596,7 +708,7 @@
 
           let ICbody = {
             "Activo": true,
-            "CodigoAbreviacion": GICbody.CodigoAbreviacion,
+            "CodigoAbreviacion": data.CodigoAbreviacion,
             "GrupoInfoComplementariaId": data,
             "Id": null,
             "Nombre": variableName.toUpperCase(),
@@ -618,7 +730,7 @@
           let link = document.getElementById('downloadlink');
           let variableKey = variableName.trim().toUpperCase().split(' ').join('_')
 
-          link.href = makeTextFile(`Colocar lo siguiente junto con las variables de entorno del SISE, en caso de que ya este salvar lo anterior en caso de que se pueda necesitar y reemplzar el objeto: \n\nINFO_COMPLEMENTARIA_IDS: {
+          link.href = makeTextFile(`Colocar lo siguiente junto con las variables de entorno del SISE, en caso de que ya este, salvar lo anterior en caso de que se pueda necesitar y reemplazar el objeto: \n\nINFO_COMPLEMENTARIA_IDS: {
      ${variableKey}: ${data2.Id} 
      }`);
 
