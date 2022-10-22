@@ -48,8 +48,12 @@
                 Generar
               </button>
             </div>
+            <hr>
+            <div class="col-md-5 m-1">
+              <button type="button" class="btn btn-primary w-100" id="btnSendVarsByGroup">Generar interna📃</button>
+            </div>
             <!-- <div class="col-md-5 m-1">
-              <button type="button" class="btn btn-primary w-100" id="btnSendAllVariables">Generar todas las variables definidas internamente 📃</button>
+              <button disabled="true" id="btnSendAllVariables" type="button" class="btn btn-secondary w-100">Generar pero con datos extra 📃</button>
             </div> -->
           </div>
         </div>
@@ -71,133 +75,10 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
+  <script src="./variables.js"></script>
+  <script src="./functions.js"></script>
+
   <script>
-    let variables = [
-      // FOTO DE PERFIL
-      "Foto de perfil SISE",
-
-      // INFO PERSONAL
-      {
-        name: "Genero",
-        type: 'array'
-      },
-      "Nacionalidad",
-      "Lugar de nacimiento",
-      "Estrato",
-      "Estado Civil",
-      "Tipo de poblacion",
-      "Condiciones discapacidad",
-      "Correo personal",
-      "Red social 1",
-      "Red social 2",
-      "Codigo del pais",
-      "Celular",
-      "Pais residencia",
-      "Departamento residencia",
-      "Municipio residencia",
-      "Localidad residencia",
-      "Direccion residencia",
-      "Intereses",
-
-      // INFO ACADEMICA
-      "NOMBRE_COLEGIO",
-      "CIUDAD_COLEGIO",
-      "FECHA_GRADUACION",
-      "Programas de posgrado titulados en la UD",
-
-      // INFO EMPRESARIAL (OPCIONAL)
-      "Nombre de su empresa",
-      "NIT de la empresa",
-      "Sector economico de la empresa",
-      "Sitio web de la empresa",
-      "Fecha de fundacion de la empresa",
-      "Actividades que realiza la empresa",
-      "Necesidades profesionales (satisfaccion)",
-      "Necesidades economicas (satisfaccion)",
-      "Necesidades desarrollo personal (satisfaccion)",
-      "Necesidades con su empresa (satisfaccion)",
-      "Cantidad de empleados",
-      "Cantidad de profesionales o tecnologos empleados",
-      "Cantidad de egresados de la UD profesionales o tecnologos empleados",
-      "Cantidad de empleos operativos, asistenciales o de apoyo generados",
-      // END INFO EMPRESARIAL (OPCIONAL)
-
-      "Principal dificultad a la hora de conseguir trabajo",
-      "Canal de busqueda de empleo",
-      "PROBLEMÁTICAS EN DONDE CONSIDERA QUE HA APORTADO",
-      "Otra PROBLEMÁTICA EN DONDE CONSIDERA QUE HA APORTADO",
-      "Situacion laboral",
-      "Cuánto tiempo (en meses) lleva en esta actividad o trabajo?",
-      "Ingreso o salario (Satisfaccion laboral)",
-      "Cantidad de horas (Satisfaccion laboral)",
-      "Aplicacion de conocimientos de la carrera  (Satisfaccion laboral)",
-      "Retos y desafíos intelectuales (Satisfaccion laboral)",
-      "Oportunidades de ascenso (Satisfaccion laboral)",
-      "Estabilidad (Satisfaccion laboral)",
-      "Ingreso o salario",
-      "Razon de vinculacion",
-      "Otra razon de vinculacion",
-      "Estatus laboral",
-      "Actividades que realiza",
-      "Tipo de contrato",
-      "Sector",
-      "Grupo de actividad economica",
-      "Formas de trabajo Independientes",
-      "Nombre de la empresa en donde labora",
-      "Nombre de la empresa",
-      "Cuales son los productos o servicios",
-      "Ciudad/ municipio / provincia de ubicacion de la empresa",
-      "Operacion de la empresa",
-      "Etapa en que se encuetra la empresa",
-      "En la actualidad, en qué actividad ocupa la mayor parte de su tiempo?",
-      "Desea conseguir un trabajo o realizar una actividad remunerada?",
-      "Durante el ultimo mes, hizo alguna diligencia para conseguir un trabajo o realizar una actividad remunerada?",
-      "Aunque desea trabajar, por qué motivo no hizo diligencias para buscar un trabajo en el ultimo mes?",
-      "Si le resultara algun trabajo remunerado Está disponible para empezar a trabajar?",
-      "Hace cuántos meses ha estado buscando empleo?",
-      "Si desea comentarnos más a detalle acerca de sus aportes, contribuciones o logros, puede hacerlo a continuacion",
-
-      // INFO EMPRENDIMIENTO VARIABLES
-      "MOTIVACION_EMPRENDER",
-      "DESARROLLADO_PROTOTIPO_MERCADO",
-      "TIENE_INTERES_DESARROLLAR_PROTOTIPO",
-      "PRODUCTOS_SERVICIOS_PROYECTA_SON",
-      "QUE _TANTO_INTERES_CREAR_EMPRESA",
-      "CUANTO_TIEMPO_DEDICAR_PROYECTO_NEGOCIO",
-      "TIPO_EMPRENDIMIENTO",
-      "TECNOLOGIAS_PROYECTO",
-      "TECNOLOGIAS_PROYECTO_OTRO",
-      "HERRAMIENTAS_RECURSOS_EMPRENDIMIENTO",
-      "HERRAMIENTAS_RECURSOS_EMPRENDIMIENTO_OTRO",
-      "CUALES_TEMATICAS_ORIENTACION",
-      "HA_VENDIDO_PRODUCTO_SERVICIO",
-      "QUIEN_VENDIDO_PRODUCTO_SERVICIO",
-      "CANALES_EMPLEO_VENDER_PRODUCTO",
-      "CANALES_EMPLEO_VENDER_PRODUCTO_OTRO",
-      "COMO_OBTUVO_CAPITAL_VENDER",
-      "COMO_OBTUVO_CAPITAL_VENDER_OTRO",
-      "CONOCE_TRAMITES_PARA_EMPRENDIMIENTO",
-      "CONOCE_ASPECTOS_TRIBUTARIOS_PROYECTO",
-      "PROCESO_CONTRATACION_CLIENTES_PROVEEDORES",
-      "PROCESO_CONTRATACION_EMPLEADOS",
-      "RECURSOS_INICIAR_EMPRESA",
-      "RECURSOS_INICIAR_EMPRESA_OTRO",
-      "ESTRUCTURA_COSTOS_INGRESOS",
-      "ASPECTOS_DEFINIDOS_EMPRENDIMIENTO",
-
-      // INFO ESTUDIANTES VARIABLES
-      "¿En la actualidad tiene personas a cargo?",
-      "Con motivo de su próxima graduación, ¿Cuál es su nivel de expectativa e incertidumbre frente a la obtención de su título?",
-      "Que aspectos o competencias le generan inseguridad frente a su perfil profesional",
-      "Desea obtener información del Seminario de empleabilidad",
-      "Seleccione la Facultad de la que es egresado",
-      "Seleccione su carrera",
-      "Indiqué la fecha programada o estimada de su graduación",
-      "Después de su graduación, ¿cuál de las siguientes opciones de formación ha pensado realizar?",
-      "¿Tiene conocimiento de los beneficios aplicables en programas de posgrados para egresados?",
-      "Seleccione los posgrados de su interés y en los cuales desea obtener información",
-    ]
-
     variables.forEach(varia => {
 
       let variableSTR = typeof varia == 'object' ?
@@ -227,8 +108,9 @@
       };
 
     let btnSend = document.getElementById("btnSend")
-    let btnSendAllVariables = document.getElementById("btnSendAllVariables")
-    let baseUrl = "https://autenticacion.portaloas.udistrital.edu.co/apioas/terceros_crud/v1"
+    // let btnSendAllVariables = document.getElementById("btnSendAllVariables")
+    let btnSendVarsByGroup = document.getElementById("btnSendVarsByGroup")
+    let baseUrl = "http://localhost:3000/v1" || "https://autenticacion.portaloas.udistrital.edu.co/apioas/terceros_crud/v1"
     let newGroupFlag = false;
 
     function eliminarVocalesEspecificaLongitud(str, longitudMax = 20) {
@@ -249,6 +131,7 @@
     // debugger
     function cortarEspecificaLongitud(str, longitudMax = 20) {
       // debugger
+      if (!str) return false;
       let resultado = str
       let countOver = 0;
       let strLength = resultado.length;
@@ -389,230 +272,229 @@
     }
 
     setGroups()
-    console.log(newGroupFlag)
 
     // Generar todas las variables
     let objVariablesIDS = {}
-    btnSendAllVariables.addEventListener('click', async () => {
-      showLoader(true)
-      try {
+    // btnSendAllVariables.addEventListener('click', async () => {
+    //   showLoader(true)
+    //   try {
 
-        const {
-          headers
-        } = getHeadersAndToken()
-        const dataTERCEROS = await getAPITercerosData(headers)
+    //     const {
+    //       headers
+    //     } = getHeadersAndToken()
+    //     const dataTERCEROS = await getAPITercerosData(headers)
 
-        const GICsJson = dataTERCEROS.GICsJson
-        const ICsJson = dataTERCEROS.ICsJson
+    //     const GICsJson = dataTERCEROS.GICsJson
+    //     const ICsJson = dataTERCEROS.ICsJson
 
-        btnSendAllVariables.disabled = true
+    //     btnSendAllVariables.disabled = true
 
-        let variablesIdsStrFull = '';
-        let variablesLength = variables.length;
+    //     let variablesIdsStrFull = '';
+    //     let variablesLength = variables.length;
 
-        for (let i = 0; i < variablesLength; i++) {
-          console.log(variables[i])
-          let variableObjFlag = false
-          if (typeof variables[i] == 'object') {
-            variableObjFlag = true
-          }
+    //     for (let i = 0; i < variablesLength; i++) {
+    //       console.log(variables[i])
+    //       let variableObjFlag = false
+    //       if (typeof variables[i] == 'object') {
+    //         variableObjFlag = true
+    //       }
 
-          let variableBase = variableObjFlag ?
-            variables[i].name :
-            variables[i]
+    //       let variableBase = variableObjFlag ?
+    //         variables[i].name :
+    //         variables[i]
 
-          let variableItemName = variableBase ? cortarEspecificaLongitud(variableBase, 98) : ''
+    //       let variableItemName = variableBase ? cortarEspecificaLongitud(variableBase, 98) : ''
 
-          if (!variableItemName) {
-            return false;
-          }
+    //       if (!variableItemName) {
+    //         return false;
+    //       }
 
-          let isGICDuplicated = false
-          GICsJson.forEach(GIC => {
-            if (GIC.Nombre == variableItemName || GIC.Descripcion == variableItemName) {
-              isGICDuplicated = true
-            }
-          })
+    //       let isGICDuplicated = false
+    //       GICsJson.forEach(GIC => {
+    //         if (GIC.Nombre == variableItemName || GIC.Descripcion == variableItemName) {
+    //           isGICDuplicated = true
+    //         }
+    //       })
 
-          if (isGICDuplicated) {
-            showLoader(false)
-            continue;
-          }
+    //       if (isGICDuplicated) {
+    //         showLoader(false)
+    //         continue;
+    //       }
 
-          let variableAbbr = eliminarVocalesEspecificaLongitud(variableBase, 20)
+    //       let variableAbbr = eliminarVocalesEspecificaLongitud(variableBase, 20)
 
-          let GICbody = {
-            "Id": null,
-            "Nombre": variableItemName,
-            "Descripcion": variableItemName,
-            "CodigoAbreviacion": variableAbbr,
-            "Activo": true
-          }
+    //       let GICbody = {
+    //         "Id": null,
+    //         "Nombre": variableItemName,
+    //         "Descripcion": variableItemName,
+    //         "CodigoAbreviacion": variableAbbr,
+    //         "Activo": true
+    //       }
 
-          let url = "grupo_info_complementaria"
+    //       let url = "grupo_info_complementaria"
 
-          // Genera grupo_info_complementaria
-          const res = await fetch(`${baseUrl}/${url}`, {
-            method: 'POST',
-            body: JSON.stringify(GICbody),
-            headers: headers
-          });
+    //       // Genera grupo_info_complementaria
+    //       const res = await fetch(`${baseUrl}/${url}`, {
+    //         method: 'POST',
+    //         body: JSON.stringify(GICbody),
+    //         headers: headers
+    //       });
 
-          if (res.status == 401) {
-            showLoader(false)
-            return alert("access_token invalido, puedes obtener uno del localstorage de la app sise en ejecución y logueado")
-          }
+    //       if (res.status == 401) {
+    //         showLoader(false)
+    //         return alert("access_token invalido, puedes obtener uno del localstorage de la app sise en ejecución y logueado")
+    //       }
 
-          const data = await res.json();
-          console.log(data)
-          console.log(data.Id)
+    //       const data = await res.json();
+    //       console.log(data)
+    //       console.log(data.Id)
 
-          if (!data || !data.Id) {
-            showLoader(false)
-            console.log('here');
+    //       if (!data || !data.Id) {
+    //         showLoader(false)
+    //         console.log('here');
 
-            return console.error('Error al generar el grupo info complementaria de ' + variableItemName)
-          }
+    //         return console.error('Error al generar el grupo info complementaria de ' + variableItemName)
+    //       }
 
-          if (variableObjFlag) {
+    //       if (variableObjFlag) {
 
-            // Genera muchas variables y coloca el arreglo en el objeto que quedará en el txt
-            let variableNamesValues = prompt(`Ingresa los valores para ${variableItemName} separados por comas y sin espacios`);
+    //         // Genera muchas variables y coloca el arreglo en el objeto que quedará en el txt
+    //         let variableNamesValues = prompt(`Ingresa los valores para ${variableItemName} separados por comas y sin espacios`);
 
-            console.log(typeof variableNamesValues);
-            console.log(variableNamesValues);
+    //         console.log(typeof variableNamesValues);
+    //         console.log(variableNamesValues);
 
-            if (typeof variableNamesValues != 'string') {
-              showLoader(false)
-              return console.error('Error al generar el grupo info complementarias de ' + variableItemName);
-            }
+    //         if (typeof variableNamesValues != 'string') {
+    //           showLoader(false)
+    //           return console.error('Error al generar el grupo info complementarias de ' + variableItemName);
+    //         }
 
-            variableNamesValues = variableNamesValues.toString().split(',')
+    //         variableNamesValues = variableNamesValues.toString().split(',')
 
-            let variableArrIC = []
+    //         let variableArrIC = []
 
-            for (let i = 0; i <= variableNamesValues.length; i++) {
+    //         for (let i = 0; i <= variableNamesValues.length; i++) {
 
-              let isICDuplicated = false
-              ICsJson.forEach(IC => {
-                if (IC.Nombre == variableItemName.toUpperCase()) {
-                  isICDuplicated = true
-                }
-              })
+    //           let isICDuplicated = false
+    //           ICsJson.forEach(IC => {
+    //             if (IC.Nombre == variableItemName.toUpperCase()) {
+    //               isICDuplicated = true
+    //             }
+    //           })
 
-              if (isICDuplicated) {
-                showLoader(false)
-                continue;
-              }
+    //           if (isICDuplicated) {
+    //             showLoader(false)
+    //             continue;
+    //           }
 
-              let ICbody = {
-                "Activo": true,
-                "CodigoAbreviacion": GICbody.CodigoAbreviacion,
-                "GrupoInfoComplementariaId": data,
-                "Id": null,
-                "Nombre": variableItemName.toUpperCase(),
-                "TipoDeDato": "string"
-              }
+    //           let ICbody = {
+    //             "Activo": true,
+    //             "CodigoAbreviacion": GICbody.CodigoAbreviacion,
+    //             "GrupoInfoComplementariaId": data,
+    //             "Id": null,
+    //             "Nombre": variableItemName.toUpperCase(),
+    //             "TipoDeDato": "string"
+    //           }
 
-              url = "info_complementaria"
+    //           url = "info_complementaria"
 
-              const resIC = await fetch(`${baseUrl}/${url}`, {
-                method: 'POST',
-                body: JSON.stringify(ICbody),
-                headers: headers
-              });
+    //           const resIC = await fetch(`${baseUrl}/${url}`, {
+    //             method: 'POST',
+    //             body: JSON.stringify(ICbody),
+    //             headers: headers
+    //           });
 
-              const variableInfoComplementaria = await resIC.json();
+    //           const variableInfoComplementaria = await resIC.json();
 
-              variableArrIC.push(variableInfoComplementaria.Id.toString())
-            }
+    //           variableArrIC.push(variableInfoComplementaria.Id.toString())
+    //         }
 
-            let newVariableKey = formatVariableStringToEnv(variableItemName)
+    //         let newVariableKey = formatVariableStringToEnv(variableItemName)
 
-            // Se llenan con el id de las variables
-            variablesIdsStrFull += `\n${newVariableKey.toString()}: [${variableArrIC}],`
+    //         // Se llenan con el id de las variables
+    //         variablesIdsStrFull += `\n${newVariableKey.toString()}: [${variableArrIC}],`
 
-            Object.defineProperty(objVariablesIDS, newVariableKey, {
-              enumerable: true,
-              configurable: true,
-              writable: true,
-              value: variableArrIC
-            });
-          } else {
-            let isICDuplicated = false
-            ICsJson.forEach(IC => {
-              if (IC.Nombre == variableItemName.toUpperCase()) {
-                isICDuplicated = true
-              }
-            })
+    //         Object.defineProperty(objVariablesIDS, newVariableKey, {
+    //           enumerable: true,
+    //           configurable: true,
+    //           writable: true,
+    //           value: variableArrIC
+    //         });
+    //       } else {
+    //         let isICDuplicated = false
+    //         ICsJson.forEach(IC => {
+    //           if (IC.Nombre == variableItemName.toUpperCase()) {
+    //             isICDuplicated = true
+    //           }
+    //         })
 
-            if (isICDuplicated) {
-              showLoader(false)
-              continue;
-            }
-            // Generar variable string
-            let ICbody = {
-              "Activo": true,
-              "CodigoAbreviacion": GICbody.CodigoAbreviacion,
-              "GrupoInfoComplementariaId": data,
-              "Id": null,
-              "Nombre": variableItemName.toUpperCase(),
-              "TipoDeDato": "string"
-            }
+    //         if (isICDuplicated) {
+    //           showLoader(false)
+    //           continue;
+    //         }
+    //         // Generar variable string
+    //         let ICbody = {
+    //           "Activo": true,
+    //           "CodigoAbreviacion": GICbody.CodigoAbreviacion,
+    //           "GrupoInfoComplementariaId": data,
+    //           "Id": null,
+    //           "Nombre": variableItemName.toUpperCase(),
+    //           "TipoDeDato": "string"
+    //         }
 
-            url = "info_complementaria"
+    //         url = "info_complementaria"
 
-            const resIC = await fetch(`${baseUrl}/${url}`, {
-              method: 'POST',
-              body: JSON.stringify(ICbody),
-              headers: headers
-            });
+    //         const resIC = await fetch(`${baseUrl}/${url}`, {
+    //           method: 'POST',
+    //           body: JSON.stringify(ICbody),
+    //           headers: headers
+    //         });
 
-            const data2 = await resIC.json();
+    //         const data2 = await resIC.json();
 
-            let newVariableKey = formatVariableStringToEnv(variableItemName)
-            console.log(newVariableKey)
+    //         let newVariableKey = formatVariableStringToEnv(variableItemName)
+    //         console.log(newVariableKey)
 
-            // Se llenan con el id de las variables
-            variablesIdsStrFull += `\n${newVariableKey.toString()}: ${data2.Id.toString()},`
+    //         // Se llenan con el id de las variables
+    //         variablesIdsStrFull += `\n${newVariableKey.toString()}: ${data2.Id.toString()},`
 
-            Object.defineProperty(objVariablesIDS, newVariableKey, {
-              enumerable: true,
-              configurable: true,
-              writable: true,
-              value: data2.Id
-            });
-          }
+    //         Object.defineProperty(objVariablesIDS, newVariableKey, {
+    //           enumerable: true,
+    //           configurable: true,
+    //           writable: true,
+    //           value: data2.Id
+    //         });
+    //       }
 
-        }
+    //     }
 
-        let variablesIdsStr = ``
+    //     let variablesIdsStr = ``
 
-        for (const keyVariable in objVariablesIDS) {
-          console.log(`
-          \n${keyVariable}: ${objVariablesIDS[keyVariable]},
-          `)
+    //     for (const keyVariable in objVariablesIDS) {
+    //       console.log(`
+    //       \n${keyVariable}: ${objVariablesIDS[keyVariable]},
+    //       `)
 
-          variablesIdsStr += `${keyVariable}: ${objVariablesIDS[keyVariable]},`
-        }
+    //       variablesIdsStr += `${keyVariable}: ${objVariablesIDS[keyVariable]},`
+    //     }
 
-        console.log(variablesIdsStr)
-        console.log(variablesIdsStrFull)
+    //     console.log(variablesIdsStr)
+    //     console.log(variablesIdsStrFull)
 
-        let link = document.getElementById('downloadlink');
-        link.href = makeTextFile(`INFO_COMPLEMENTARIA_IDS: {${variablesIdsStrFull}}`);
-        link.style.display = 'block';
+    //     let link = document.getElementById('downloadlink');
+    //     link.href = makeTextFile(`INFO_COMPLEMENTARIA_IDS: {${variablesIdsStrFull}}`);
+    //     link.style.display = 'block';
 
-        document.getElementById('ICsTxts').innerHTML = JSON.stringify(objVariablesIDS)
+    //     document.getElementById('ICsTxts').innerHTML = JSON.stringify(objVariablesIDS)
 
-        btnSendAllVariables.disabled = false
+    //     btnSendAllVariables.disabled = false
 
-      } catch (e) {
-        showLoader(false)
-        console.log(e)
-      }
-      showLoader(false)
-    })
+    //   } catch (e) {
+    //     showLoader(false)
+    //     console.log(e)
+    //   }
+    //   showLoader(false)
+    // })
 
     // Generar una variable
     btnSend.addEventListener('click', async () => {
@@ -731,7 +613,7 @@
           let variableKey = variableName.trim().toUpperCase().split(' ').join('_')
 
           link.href = makeTextFile(`Colocar lo siguiente junto con las variables de entorno del SISE, en caso de que ya este, salvar lo anterior en caso de que se pueda necesitar y reemplazar el objeto: \n\nINFO_COMPLEMENTARIA_IDS: {
-     ${variableKey}: ${data2.Id} 
+     ${variableKey}: ${data2.Id}
      }`);
 
           link.style.display = 'block';
@@ -750,6 +632,178 @@
     })
   </script>
 
+  <script>
+    // Generar variables por sus respectivos grupos
+    btnSendVarsByGroup.addEventListener('click', async () => {
+      console.info("Generar variables por sus respectivos grupos")
+      showLoader(true)
+      try {
+
+        const {
+          headers
+        } = getHeadersAndToken()
+        const dataTERCEROS = await getAPITercerosData(headers)
+
+        const GICsJson = dataTERCEROS.GICsJson // todos los grupos
+        const ICsJson = dataTERCEROS.ICsJson // todas las variables para los campos | inputs
+
+        btnSendVarsByGroup.disabled = true
+
+        let variablesIdsStrFull = '';
+        let variablesLength = varsByGroups.length;
+
+        for (let i = 0; i < variablesLength; i++) { // aqui se recorre varsByGroups
+
+          let groupIsDuplicatedID;
+          let isStringGroup = false
+          let variableBase = varsByGroups[i]
+          let variableItemName = ''
+          let variableAbbr;
+
+          if (typeof variableBase.group == 'string') {
+            isStringGroup = true
+          }
+
+          let GICbody = {
+            "Id": null,
+            "Nombre": variableItemName,
+            "Descripcion": variableItemName,
+            "Activo": true
+          }
+
+          if (isStringGroup) {
+            variableItemName = cortarEspecificaLongitud(variableBase.group, 98)
+            GICbody.Nombre = variableItemName
+            GICbody.Descripcion = variableItemName
+            GICbody.CodigoAbreviacion = eliminarVocalesEspecificaLongitud(variableItemName, 20)
+          }
+
+          // Aqui se recorren los grupos
+          GICsJson.forEach(group => {
+
+            if (groupIsDuplicatedID) {
+              return;
+            }
+            
+            if (isStringGroup) {
+              if (group.Nombre == variableBase.group || group.Id == variableBase.group) {
+                groupIsDuplicatedID = group.Id
+              }
+            } else {
+              if (group.Id == variableBase.group) {
+                groupIsDuplicatedID = group.Id
+              }
+            }
+          })
+
+          let groupObject = {};
+
+          // GENERA GRUPO
+          if (groupIsDuplicatedID) {
+            GICbody.Id = groupIsDuplicatedID
+            groupObject = GICbody
+          } else {
+
+            let url = "grupo_info_complementaria"
+
+            // Genera grupo_info_complementaria
+            const res = await fetch(`${baseUrl}/${url}`, {
+              method: 'POST',
+              body: JSON.stringify(GICbody),
+              headers: headers
+            });
+
+            if (res.status == 401) {
+              showLoader(false)
+              return alert("access_token invalido, puedes obtener uno del localstorage de la app sise en ejecución y logueado")
+            }
+
+            groupObject = await res.json();
+
+            if (!groupObject || !groupObject.Id) {
+              showLoader(false)
+              return console.error('Error al generar el grupo info complementaria de ' + variableItemName)
+            }
+          }
+
+          // END GENERA GRUPO
+
+          let isICDuplicated = false
+          ICsJson.forEach(IC => {
+            if (IC.Nombre == variableItemName.toUpperCase()) {
+              isICDuplicated = true
+            }
+          })
+
+          if (isICDuplicated) {
+            showLoader(false)
+            continue;
+          }
+
+          // Generar variable string
+          let ICbody = {
+            "Activo": true,
+            "CodigoAbreviacion": groupObject.CodigoAbreviacion,
+            "GrupoInfoComplementariaId": groupObject,
+            "Id": null,
+            "Nombre": variableItemName.toUpperCase(),
+            "TipoDeDato": "string"
+          }
+
+          url = "info_complementaria"
+
+          const resIC = await fetch(`${baseUrl}/${url}`, {
+            method: 'POST',
+            body: JSON.stringify(ICbody),
+            headers: headers
+          });
+
+          const data2 = await resIC.json();
+
+          let newVariableKey = formatVariableStringToEnv(variableItemName)
+          console.log(newVariableKey)
+
+          // Se llenan con el id de las variables
+          variablesIdsStrFull += `\n${newVariableKey.toString()}: ${data2.Id.toString()},`
+
+          Object.defineProperty(objVariablesIDS, newVariableKey, {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: data2.Id
+          });
+
+        }
+
+        let variablesIdsStr = ``
+
+        for (const keyVariable in objVariablesIDS) {
+          console.log(`
+          \n${keyVariable}: ${objVariablesIDS[keyVariable]},
+          `)
+
+          variablesIdsStr += `${keyVariable}: ${objVariablesIDS[keyVariable]},`
+        }
+
+        console.log(variablesIdsStr)
+        console.log(variablesIdsStrFull)
+
+        let link = document.getElementById('downloadlink');
+        link.href = makeTextFile(`INFO_COMPLEMENTARIA_IDS: {${variablesIdsStrFull}}`);
+        link.style.display = 'block';
+
+        document.getElementById('ICsTxts').innerHTML = JSON.stringify(objVariablesIDS)
+
+        btnSendVarsByGroup.disabled = false
+
+      } catch (e) {
+        showLoader(false)
+        console.log(e)
+      }
+      showLoader(false)
+    })
+  
+  </script>
 </body>
 
 </html>

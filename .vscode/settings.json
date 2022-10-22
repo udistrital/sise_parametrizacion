@@ -3,6 +3,11 @@
     "Abreviacion",
     "Cbody",
     "Codigo",
-    "Descripcion"
+    "Descripcion",
+    "Direccion",
+    "GRADUACION",
+    "pais",
+    "Pais",
+    "poblacion"
   ]
 }
