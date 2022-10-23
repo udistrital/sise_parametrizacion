@@ -1,13 +1,5 @@
 let varsByGroups = [
-
   // INFO EMPRESARIAL (OPCIONAL)
-
-
-
-
-
-
-
   {
     name: "Nombre de su empresa",
     group: "Información empresarial"
@@ -16,26 +8,6 @@ let varsByGroups = [
     name: "NIT de la empresa",
     group: "Información empresarial"
   },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   {
     name: "Sector economico de la empresa",
     group: "Información empresarial"
@@ -489,42 +461,6 @@ let varsByGroups = [
 
   },
 ]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // TRASH
 let variables = [
